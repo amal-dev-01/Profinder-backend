@@ -29,6 +29,15 @@ class PostView(APIView):
     
 
 class PostUpdateDelettView(APIView):
+
+    def get(self, request, pk, format=None):
+            try:
+                post = Post.objects.get(pk=pk)
+                serializer = PostSerializer(post)
+                return Response(serializer.data)
+            except Post.DoesNotExist:
+                return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+    
     def put(self,request,pk,format=None):
         
         try:

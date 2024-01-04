@@ -1,23 +1,42 @@
 from rest_framework import serializers
 from .models import Post,Like,Comment
+from account.models import User
 
 
 
 
-
-
-
-
-class LikeSerializer(serializers.ModelSerializer):
+class CommentUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Like
-        fields = ('user', 'post', 'created_at')
+        model = User
+        fields = ['username']
+
+class LikeUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username']
 
 class CommentSerializer(serializers.ModelSerializer):
+    user = CommentUserSerializer(read_only=True)
+
     class Meta:
         model = Comment
         fields = ['id', 'post', 'user', 'text', 'created_at']
         read_only_fields = ('user', )
+
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    user = LikeUserSerializer(read_only=True)
+    class Meta:
+        model = Like
+        fields = ('user', 'post', 'created_at')
+        read_only_fields = ('user', )
+
+# class CommentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Comment
+#         fields = ['id', 'post', 'user', 'text', 'created_at']
+#         read_only_fields = ('user', )
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -43,7 +62,10 @@ class PostSerializer(serializers.ModelSerializer):
 
 
     def get_total_likes(self, post):
-        return post.likes.count()  
+        return post.likes.count()
+    
+
+
 
 
 
