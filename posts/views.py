@@ -18,8 +18,6 @@ class PostView(APIView):
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 
-
-
     def post(self, request, *args, **kwargs):
         serializer = PostSerializer(data=request.data,context={'request': request})
         if serializer.is_valid():
@@ -29,6 +27,7 @@ class PostView(APIView):
     
 
 class PostUpdateDelettView(APIView):
+    permission_classes=(IsAuthenticated,)
 
     def get(self, request, pk, format=None):
             try:
@@ -45,7 +44,7 @@ class PostUpdateDelettView(APIView):
         except Post.DoesNotExist:
             return Response({"error": "Post not found"},status=status.HTTP_404_NOT_FOUND)
         
-        serializer = PostSerializer(post, data=request.data)
+        serializer = PostSerializer(post, data=request.data ,partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -66,23 +65,35 @@ class PostUpdateDelettView(APIView):
 class AllPost(APIView):
     permission_classes=(IsAuthenticated,)
     def get(self, request, format=None):
-        posts = Post.objects.all()  
+        posts = Post.objects.exclude(user=request.user) 
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
     
 
 class PostLikeView(APIView):
-        permission_classes=(IsAuthenticated,)
-        def post(self, request, pk, format=None):
-            post = Post.objects.get(pk=pk)
-            like= post.likes.filter(user=request.user).first()
-            if like:
-                like.delete()
-                return Response({'msg': 'Delete You like'}, status=status.HTTP_400_BAD_REQUEST)
+    permission_classes=(IsAuthenticated,)
+    def post(self, request, pk, format=None):
+        post = Post.objects.get(pk=pk)
+        like = post.likes.filter(user=request.user).first()
+
+        if like:
+            like.delete()
+            return Response({'msg': 'You unliked the post'}, status=status.HTTP_200_OK)
+        else:
             like = Like(user=request.user, post=post)
             like.save()
             serializer = LikeSerializer(like)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'msg': 'You liked the post'}, status=status.HTTP_201_CREATED)
+        # def post(self, request, pk, format=None):
+        #     post = Post.objects.get(pk=pk)
+        #     like= post.likes.filter(user=request.user).first()
+        #     if like:
+        #         like.delete()
+        #         return Response({'msg': 'Delete You like'}, status=status.HTTP_400_BAD_REQUEST)
+        #     like = Like(user=request.user, post=post)
+        #     like.save()
+        #     serializer = LikeSerializer(like)
+        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class CommentCreateView(APIView):
     permission_classes = (IsAuthenticated,)

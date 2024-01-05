@@ -47,7 +47,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields=('id','title','user','post','created_at','likes','total_likes','comments')
+        fields=('id','title','user','post','created_at','description','likes','total_likes','comments')
         read_only_fields = ('user', )  
 
 
@@ -57,7 +57,9 @@ class PostSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title',instance.title)
-        instance.post = validated_data.get('post',instance.post)
+        # instance.post = validated_data.get('post',instance.post)
+        instance.description = validated_data.get('description',instance.description)
+
         return super().update(instance, validated_data)
 
 
