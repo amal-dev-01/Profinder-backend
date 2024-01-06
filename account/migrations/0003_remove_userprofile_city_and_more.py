@@ -7,42 +7,60 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('account', '0002_professionalprofile'),
+        ("account", "0002_professionalprofile"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='userprofile',
-            name='city',
+            model_name="userprofile",
+            name="city",
         ),
         migrations.RemoveField(
-            model_name='userprofile',
-            name='coordinates',
+            model_name="userprofile",
+            name="coordinates",
         ),
         migrations.RemoveField(
-            model_name='userprofile',
-            name='country',
+            model_name="userprofile",
+            name="country",
         ),
         migrations.RemoveField(
-            model_name='userprofile',
-            name='district',
+            model_name="userprofile",
+            name="district",
         ),
         migrations.RemoveField(
-            model_name='userprofile',
-            name='state',
+            model_name="userprofile",
+            name="state",
         ),
         migrations.CreateModel(
-            name='Location',
+            name="Location",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('coordinates', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326)),
-                ('country', models.CharField(blank=True, max_length=100, null=True)),
-                ('state', models.CharField(blank=True, max_length=100, null=True)),
-                ('district', models.CharField(blank=True, max_length=100, null=True)),
-                ('city', models.CharField(blank=True, max_length=100, null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "coordinates",
+                    django.contrib.gis.db.models.fields.PointField(
+                        blank=True, null=True, srid=4326
+                    ),
+                ),
+                ("country", models.CharField(blank=True, max_length=100, null=True)),
+                ("state", models.CharField(blank=True, max_length=100, null=True)),
+                ("district", models.CharField(blank=True, max_length=100, null=True)),
+                ("city", models.CharField(blank=True, max_length=100, null=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

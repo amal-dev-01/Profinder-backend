@@ -4,25 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('account', '0009_alter_follower_following_user_alter_follower_user'),
+        ("account", "0009_alter_follower_following_user_alter_follower_user"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofile',
-            name='address',
+            model_name="userprofile",
+            name="address",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='bio',
+            model_name="userprofile",
+            name="bio",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='image',
-            field=models.ImageField(blank=True, default='default.jpg', null=True, upload_to='profile_pics'),
+            model_name="userprofile",
+            name="image",
+            field=models.ImageField(
+                blank=True, default="default.jpg", null=True, upload_to="profile_pics"
+            ),
         ),
     ]

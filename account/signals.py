@@ -1,7 +1,7 @@
-
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from account.models import User,UserProfile,ProfessionalProfile
+
+from account.models import ProfessionalProfile, User, UserProfile
 
 # @receiver(post_save, sender=User)
 # def create_user_profile(sender, instance, created, **kwargs):
@@ -10,4 +10,4 @@ from account.models import User,UserProfile,ProfessionalProfile
 #                 ProfessionalProfile.objects.create(user=instance)
 #         UserProfile.objects.create(user=instance)
 #         # print(instance,'para')
-# 
+#

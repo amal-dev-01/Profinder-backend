@@ -6,20 +6,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('account', '0008_rename_userfollowing_follower'),
+        ("account", "0008_rename_userfollowing_follower"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='follower',
-            name='following_user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='following', to=settings.AUTH_USER_MODEL),
+            model_name="follower",
+            name="following_user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="following",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='follower',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='followers', to=settings.AUTH_USER_MODEL),
+            model_name="follower",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="followers",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

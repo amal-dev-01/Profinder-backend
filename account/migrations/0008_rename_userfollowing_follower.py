@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('account', '0007_remove_user_followers_userfollowing'),
+        ("account", "0007_remove_user_followers_userfollowing"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='UserFollowing',
-            new_name='Follower',
+            old_name="UserFollowing",
+            new_name="Follower",
         ),
     ]

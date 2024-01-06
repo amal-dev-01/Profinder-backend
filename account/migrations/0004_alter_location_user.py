@@ -6,15 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('account', '0003_remove_userprofile_city_and_more'),
+        ("account", "0003_remove_userprofile_city_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='location',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='location', to=settings.AUTH_USER_MODEL),
+            model_name="location",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="location",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

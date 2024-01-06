@@ -1,5 +1,3 @@
-
-
 import pyotp
 from django.utils import timezone
 
@@ -10,14 +8,11 @@ def generate_otp():
     return otp
 
 
-
-
-
 import random
 import string
-from django.conf import settings
-from twilio.rest import Client  
 
+from django.conf import settings
+from twilio.rest import Client
 
 
 def send_otp_phone(phone_number, otp):
@@ -27,10 +22,7 @@ def send_otp_phone(phone_number, otp):
 
     client = Client(account_sid, auth_token)
     message = client.messages.create(
-        body=f'Your OTP is: {otp}',
-        from_=twilio_phone_number,
-        to=phone_number
+        body=f"Your OTP is: {otp}", from_=twilio_phone_number, to=phone_number
     )
-    print(message,'mess')
+    print(message, "mess")
     from twilio.base.exceptions import TwilioRestException
-

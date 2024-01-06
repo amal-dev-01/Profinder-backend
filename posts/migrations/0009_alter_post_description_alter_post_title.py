@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('posts', '0008_alter_post_description'),
+        ("posts", "0008_alter_post_description"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='post',
-            name='description',
+            model_name="post",
+            name="description",
             field=models.TextField(blank=True, max_length=600, null=True),
         ),
         migrations.AlterField(
-            model_name='post',
-            name='title',
+            model_name="post",
+            name="title",
             field=models.CharField(blank=True, max_length=200, null=True),
         ),
     ]

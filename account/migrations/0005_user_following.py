@@ -5,15 +5,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('account', '0004_alter_location_user'),
+        ("account", "0004_alter_location_user"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='following',
-            field=models.ManyToManyField(blank=True, related_name='followed', to=settings.AUTH_USER_MODEL),
+            model_name="user",
+            name="following",
+            field=models.ManyToManyField(
+                blank=True, related_name="followed", to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]
