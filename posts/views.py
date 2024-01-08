@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -81,7 +81,7 @@ class PostLikeView(APIView):
 
     def get(self, request, pk, format=None):
         try:
-            like = Like.objects.get(post__pk=pk, user=request.user)
+            Like.objects.get(post__pk=pk, user=request.user)
             return Response({"liked": True}, status=status.HTTP_200_OK)
         except Like.DoesNotExist:
             return Response({"liked": False}, status=status.HTTP_200_OK)
@@ -100,17 +100,6 @@ class PostLikeView(APIView):
             return Response(
                 {"msg": "You liked the post"}, status=status.HTTP_201_CREATED
             )
-
-        # def post(self, request, pk, format=None):
-        #     post = Post.objects.get(pk=pk)
-        #     like= post.likes.filter(user=request.user).first()
-        #     if like:
-        #         like.delete()
-        #         return Response({'msg': 'Delete You like'}, status=status.HTTP_400_BAD_REQUEST)
-        #     like = Like(user=request.user, post=post)
-        #     like.save()
-        #     serializer = LikeSerializer(like)
-        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CommentCreateView(APIView):

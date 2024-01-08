@@ -1,17 +1,20 @@
 from django.contrib.auth import get_user_model
-from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
-from rest_framework_gis.serializers import GeoFeatureModelListSerializer
+
+# from rest_framework.validators import UniqueValidator
+# from rest_framework_gis.serializers import GeoFeatureModelListSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from account.models import *
+from account.models import Follower, ProfessionalProfile, User, UserProfile
 
 # from django.contrib.auth.password_validation import validate_password
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    # password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    # password = serializers.CharField(
+    # write_only=True, required=True, 
+    # validators=[validate_password]
+    # )
     password = serializers.CharField(write_only=True, required=True)
     password2 = serializers.CharField(write_only=True, required=True)
 

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models
-from django.db import models
+
+# from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.

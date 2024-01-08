@@ -1,8 +1,9 @@
 from django.contrib import admin
+
 # from django.contrib.gis.admin.options import OSMGeoAdmin
 from django.contrib.gis.admin import GISModelAdmin
 
-from account.models import *
+from account.models import Follower, Location, ProfessionalProfile, User, UserProfile
 
 # from django.contrib.gis import gdal
 # from django.contrib.gis.admin import OSMGeoAdmin
@@ -14,9 +15,6 @@ from account.models import *
 @admin.register(User)
 class UserRegister(GISModelAdmin):
     list_display = ("email", "is_active", "is_professional", "is_admin")
-
-
-# admin.site.register(UserProfile)
 
 
 @admin.register(UserProfile)
@@ -40,10 +38,3 @@ class Follow(admin.ModelAdmin):
         "user",
         "following_user",
     )
-
-
-# admin.site.register(PasswordResetToken)
-
-# djvenv\scripts\activate
-
-# py manage.py runserve

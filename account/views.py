@@ -1,13 +1,14 @@
 import json
 import urllib
-from datetime import datetime, timedelta
 
-from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.gis.geos import Point
 from django.core.mail import send_mail
-from django.db.models import F, Q
-from django.shortcuts import HttpResponse, render
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from ipware import get_client_ip
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -15,19 +16,22 @@ from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from twilio.rest import Client
 
-from account.models import Location, ProfessionalProfile, User, UserProfile
-from account.Twilio.twilio import send_sms
+from account.models import Follower, Location, ProfessionalProfile, User, UserProfile
 
-from .serializers import (ChangePasswordSerializer, ForgotPasswordSerializer,
-                          MyTokenObtainPairSerializer,
-                          OTPVerificationSerializer,
-                          ProfessionalRegisterSerializer, RegisterSerializer,
-                          ResendOtpSerializer, UserListSerializer)
-from .utils import generate_otp, send_otp_phone
-
-# from django.utils import timezone
+from .serializers import (
+    ChangePasswordSerializer,
+    FollowerSerializer,
+    ForgotPasswordSerializer,
+    MyTokenObtainPairSerializer,
+    OTPVerificationSerializer,
+    ProfessionalRegisterSerializer,
+    RegisterSerializer,
+    ResendOtpSerializer,
+    UserListSerializer,
+    UserSerializer,
+)
+from .utils import generate_otp
 
 # Create your views here.
 
@@ -154,15 +158,10 @@ class ResendOtp(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Login view
-
-
 class MyObtainTokenPairView(TokenObtainPairView):
     permission_classes = (AllowAny,)
     serializer_class = MyTokenObtainPairSerializer
 
-
-from account.serializers import UserSerializer
 
 # class UserProfileUpdateView(APIView):
 #     permission_classes = [IsAuthenticated]
@@ -237,13 +236,6 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response(
             {"detail": "Password changed successfully."}, status=status.HTTP_200_OK
         )
-
-
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-
-from .serializers import ForgotPasswordSerializer
 
 
 class ForgotPasswordView(APIView):
@@ -340,11 +332,6 @@ class CurrentLocation(APIView):
         return Response(data1, status=status.HTTP_200_OK)
 
 
-from django.shortcuts import get_object_or_404
-
-from .models import Follower
-
-
 class FollowUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -381,9 +368,6 @@ class FollowUserView(APIView):
             {"message": "User unfollowed successfully"},
             status=status.HTTP_204_NO_CONTENT,
         )
-
-
-from .serializers import FollowerSerializer
 
 
 class FollowersView(APIView):
