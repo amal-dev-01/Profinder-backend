@@ -64,6 +64,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # "channels.middleware.websocket.WebSocketMiddleware",
+
 ]
 
 ROOT_URLCONF = "profinder.urls"
@@ -85,17 +87,25 @@ TEMPLATES = [
 ]
 
 # WSGI_APPLICATION = "profinder.wsgi.application"
+# ASGI_APPLICATION = "profinder.routing.application"
+
 ASGI_APPLICATION = "profinder.asgi.application"
 
 
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
+    'default': {
+        'BACKEND': "channels.layers.InMemoryChannelLayer"
+        }
+    }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
 
 
 # Database
