@@ -1,112 +1,65 @@
-import json
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
-from chat.models import Conversation,Message
 from account.models import User
-from channels.generic.websocket import JsonWebsocketConsumer
-from chat.serilalizers import MessageSerializer
- 
+from channels.layers import get_channel_layer
 import json
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
+from .models import Message,Room
 
-class TextRoomConsumer(WebsocketConsumer):
-    def connect(self):
-
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'chat_%s' % self.room_name
-        # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
-        )
-        self.accept()
-    def disconnect(self, close_code):
-        # Leave room group
-        async_to_sync(self.channel_layer.group_discard)(
+        self.room_group_name = f'chat_{self.room_name}'
+
+        await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
 
-    def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        
-        message_type = text_data_json.get('type', None)
-        
-        if message_type == 'custom_message':
-            content = text_data_json['content']
-            sender = text_data_json['sender']
+        await self.accept()
 
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    'type': 'chat_message',
-                    'message': content,
-                    'sender': sender
-                }
-            )
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    @database_sync_to_async
+    def create_message(self, message, username, room_name):                 
+        room = Room.objects.get_or_create(name=room_name)[0]
+        message_obj = Message.objects.create(
+            message=message,
+            username=username,
+            room=room,
+        )
+        return message_obj
 
 
-    def chat_message(self, event):
-        text = event['message']
-        sender = event['sender']
-        self.send(text_data=json.dumps({
-            'text': text,
-            'sender': sender
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message = data['message']
+        username = data['username']
+        room_name = self.room_name
+
+        message_obj = await self.create_message(message, username, room_name)
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat.message',
+                'message': message_obj.message,
+                'username': message_obj.username,
+                'timestamp': str(message_obj.timestamp),
+            }
+        )
+
+    async def chat_message(self, event):
+        message = event['message']
+        username = event['username']
+        timestamp = event['timestamp']
+
+        await self.send(text_data=json.dumps({
+            'message': message,
+            'username': username,
+            'timestamp': timestamp,
         }))
 
-
-
-
-# from asgiref.sync import async_to_sync
-# from channels.generic.websocket import JsonWebsocketConsumer
-# from chat.models import Conversation
  
- 
-# class ChatConsumer(JsonWebsocketConsumer):
-#     """
-#     This consumer is used to show user's online status,
-#     and send notifications.
-#     """
- 
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(args, kwargs)
-#         self.user = None
-#         self.conversation_name = None
-#         self.conversation = None
-
-
-    # def connect(self):
-    #     self.user = self.scope["user"]
-    #     if not self.user.is_authenticated:
-    #         return
-    
-    #     self.accept()
-    #     # self.conversation_name = f"{self.scope['url_route']['kwargs']['conversation_name']}"
-    #     # self.conversation, created = Conversation.objects.get_or_create(name=self.conversation_name)
-    
-    #     async_to_sync(self.channel_layer.group_add)(
-    #         self.conversation_name,
-    #         self.channel_name,
-    #     )
-    
-    # def disconnect(self, code):
-    #     print("Disconnected!")
-    #     return super().disconnect(code)
- 
-    # def receive_json(self, content, **kwargs):
-    #     message_type = content["type"]
-    #     if message_type == "chat_message":
-    #         async_to_sync(self.channel_layer.group_send)(
-    #             self.room_name,
-    #             {
-    #                 "type": "chat_message_echo",
-    #                 "name": content["name"],
-    #                 "message": content["message"],
-    #             },
-    #         )
-    #     return super().receive_json(content, **kwargs)
- 
-    # def chat_message_echo(self, event):
-    #     print(event)
-    #     self.send_json(event)

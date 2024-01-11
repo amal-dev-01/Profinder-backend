@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from account.models import User
 from chat.serilalizers import UserGetSerializer,MessageSerializer
 from .models import Message
+from rest_framework import generics
 
 
 # Create your views here.
@@ -31,13 +32,37 @@ class ListUser(APIView):
 #     serializer_class = MessageSerializer
 #     ordering = ('-timestamp',)
         
-from rest_framework import generics
-from .models import Message
+class MessageList(APIView):
+    def get(self, request, format=None):
+        messages = Message.objects.all().order_by('-timestamp')
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
 
-class MessageListView(generics.ListCreateAPIView):
-    queryset = Message.objects.all()
-    serializer_class = MessageSerializer
+    def post(self, request, format=None):
+        serializer = MessageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ChatHistoryView(APIView):
+    def get(self, request, room_name):
+        try:
+            chat_history = Message.objects.filter(room__name=room_name).order_by('timestamp')
+            serializer = MessageSerializer(chat_history, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class DeleteMessageView(APIView):
+    def delete(self, request, message_id):
+        try:
+            message = Message.objects.get(pk=message_id)
+            message.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Message.DoesNotExist:
+            return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class MessageDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Message.objects.all()
-    serializer_class = MessageSerializer
+
