@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "account",
     "posts",
     "chat",
+    "adminpanel",
+    "booking",
     "django.contrib.gis",
     "rest_framework_gis",
 ]

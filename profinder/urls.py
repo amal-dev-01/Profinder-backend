@@ -24,7 +24,8 @@ urlpatterns = [
     path('',include('account.urls')),
     path('post/',include('posts.urls')),
     path('chat/',include('chat.urls')),
-
+    path('adminpanel/',include('adminpanel.urls')),
+    path('book/',include('booking.urls')),
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

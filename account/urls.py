@@ -38,7 +38,7 @@ urlpatterns = [
     ),
     path("location/", CurrentLocation.as_view(), name="current-location"),
     path("<int:pk>/follow/", FollowUserView.as_view(), name="follow"),
-    path("<int:pk>/unfollow/", FollowUserView.as_view(), name="unfollow"),
+    path("<int:user_id>/unfollow/", FollowUserView.as_view(), name="unfollow"),
     path("userlist/", UserListToFollowView.as_view(), name="follow-toggle"),
     path("followlist/", FollowersView.as_view(), name="user-following"),
 ]

@@ -105,6 +105,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "userprofile",
             "professionalprofile",
+            "is_active"
         )
 
     def update(self, instance, validated_data):

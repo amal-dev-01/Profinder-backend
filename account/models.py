@@ -23,7 +23,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
-        return f"{self.email}and {self.id}"
+        return f"{self.email} and {self.id}"
 
 
 class UserProfile(models.Model):
@@ -69,6 +69,8 @@ class Location(models.Model):
     @property
     def latitude(self):
         return self.coordinates.y
+    def __str__(self):
+        return self.state
 
 
 class Follower(models.Model):
