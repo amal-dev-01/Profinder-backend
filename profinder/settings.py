@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 from pathlib import Path
-
+from datetime import timedelta
+import os
+from django.conf import settings
 from decouple import Csv, config
 from osgeo import gdal
 
@@ -38,7 +40,6 @@ AUTH_USER_MODEL = "account.User"
 
 INSTALLED_APPS = [
     "daphne",
-    # "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -55,6 +56,8 @@ INSTALLED_APPS = [
     "booking",
     "django.contrib.gis",
     "rest_framework_gis",
+    'drf_yasg',
+
 ]
 
 MIDDLEWARE = [
@@ -66,7 +69,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "channels.middleware.websocket.WebSocketMiddleware",
 
 ]
 
@@ -100,14 +102,6 @@ CHANNEL_LAYERS = {
         }
     }
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
 
 
 # Database
@@ -141,6 +135,19 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "5432",
     }
+}
+
+
+SWAGGER_SETTINGS = {
+    "TITLE": "Profinder",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "in": "header",
+            "name": "Authorization",
+            "type": "apiKey",
+   },
+},
 }
 
 
@@ -194,7 +201,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config("email")
 EMAIL_HOST_PASSWORD = "oute lakc vhdq lzhy"
 
-import os
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -206,10 +212,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-
-from datetime import timedelta
-
-from django.conf import settings
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),

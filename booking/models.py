@@ -21,10 +21,10 @@ class Booking(models.Model):
     booking_date = models.DateTimeField()
     address = models.TextField()
     job = models.CharField(max_length=50)
-    location = models.PointField(srid=4326, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     is_paid = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING)
+    is_completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Booking #{self.id} - {self.user.email} to {self.professional.email} on {self.booking_date}"

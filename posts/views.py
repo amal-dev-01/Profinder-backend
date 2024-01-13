@@ -1,5 +1,8 @@
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,12 +15,24 @@ from .serializer import CommentSerializer, LikeSerializer, PostSerializer
 
 class PostView(APIView):
     permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser,)
 
+    @swagger_auto_schema(
+        tags=["User Post"],
+        operation_description="Get the requested user post",
+        responses={200: PostSerializer, 400: "bad request", 500: "errors"},
+    )
     def get(self, request, format=None):
         posts = Post.objects.filter(user=request.user)
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        tags=["User Post"],
+        operation_description="Create post",
+        responses={200: PostSerializer, 400: "bad request", 500: "errors"},
+        request_body=PostSerializer,
+    )
     def post(self, request, *args, **kwargs):
         serializer = PostSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
@@ -29,6 +44,12 @@ class PostView(APIView):
 class PostUpdateDelettView(APIView):
     permission_classes = (IsAuthenticated,)
 
+    # @swagger_auto_schema(
+    #     tags=["User update post"],
+    #     operation_description="Get the details of post",
+    #     responses={200: PostSerializer, 400: "bad request", 500: "errors"},
+    #     request_body=PostSerializer,
+    # )
     def get(self, request, pk, format=None):
         try:
             post = Post.objects.get(pk=pk)
@@ -39,6 +60,12 @@ class PostUpdateDelettView(APIView):
                 {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
+    @swagger_auto_schema(
+        tags=["User update post"],
+        operation_description="update post",
+        responses={200: PostSerializer, 400: "bad request", 500: "errors"},
+        request_body=PostSerializer,
+    )
     def put(self, request, pk, format=None):
         try:
             post = Post.objects.get(pk=pk, user=request.user)
@@ -53,6 +80,12 @@ class PostUpdateDelettView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(
+        tags=["User update post"],
+        operation_description="Delete post",
+        responses={200: PostSerializer, 400: "bad request", 500: "errors"},
+        request_body=PostSerializer,
+    )
     def delete(self, request, pk, format=None):
         try:
             post = Post.objects.get(pk=pk, user=request.user)
