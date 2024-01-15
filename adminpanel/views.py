@@ -27,3 +27,25 @@ class UserDetails(generics.RetrieveUpdateDestroyAPIView):
         instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
+from booking.models import Booking
+from rest_framework.views import APIView
+
+class Total(APIView):
+
+    def get(self,request, *args, **kwargs):
+        result = (
+            Booking.objects.filter(status=Booking.COMPLETED, is_paid=True) 
+            .annotate(month=TruncMonth('booking_date'))  
+            .values('professional', 'month')  
+            .annotate(total_amount=Sum('price'))
+            .order_by('professional', 'month')  
+        )
+        return Response(result)
+
