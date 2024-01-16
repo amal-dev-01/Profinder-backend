@@ -7,12 +7,12 @@ from .models import Comment, Like, Post
 
 @admin.register(Post)
 class Post(admin.ModelAdmin):
-    list_display = ("title", "user")
+    list_display = ("title", "user","id")
 
 
 @admin.register(Like)
 class LikeAdmin(admin.ModelAdmin):
-    list_display = ("user", "post", "created_at")
+    list_display = ("user", 'id',"post", "created_at")
 
 
 @admin.register(Comment)

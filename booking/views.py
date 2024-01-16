@@ -145,7 +145,10 @@ class UserAddConfirm(APIView):
     def put(self, request, booking_id, action):
 
         try:
+            print('kkk')
+
             booking = Booking.objects.get(pk=booking_id, user=request.user)
+            print(booking)
         except Booking.DoesNotExist:
             return Response(
                 {"detail": "Booking not found"}, status=status.HTTP_404_NOT_FOUND
