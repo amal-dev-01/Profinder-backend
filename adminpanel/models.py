@@ -8,6 +8,7 @@ class Payment(models.Model):
     month = models.IntegerField()
     year = models.IntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"Payment for {self.professional.email} - {self.month}/{self.year}"

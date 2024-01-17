@@ -37,7 +37,7 @@ from booking.models import Booking
 from rest_framework.views import APIView
 
 class Total(APIView):
-    
+
     def get(self,request, *args, **kwargs):
         result = (
             Booking.objects.filter(status=Booking.COMPLETED, is_paid=True)
@@ -46,5 +46,16 @@ class Total(APIView):
             .annotate(total_amount=Sum('price'))
             .order_by('professional', 'month')  
         )
-        return Response(result)
+
+
+
+from adminpanel.tasks import send_mail_func
+from django.shortcuts import HttpResponse
+
+def send_mail_to_users(request):
+    send_mail_func.delay()
+    return HttpResponse('sent')
+
+
+
 

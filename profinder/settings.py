@@ -57,6 +57,9 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "rest_framework_gis",
     'drf_yasg',
+    'django_celery_results',
+    'django_celery_beat',
+
 
 ]
 
@@ -244,3 +247,16 @@ TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER")
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/'
+CELERY_ACCEPT_CONTENT=['application/json']
+CELERY_RESULT_SERIALIZER='json'
+CELERY_TASK_SERIALIZER ='json'
+CELERY_TIMEZONE = 'Asia/kolkata'
+
+CELERY_RESULT_BACKEND = "django-db"
+
+
+
+# CELERY_BEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'

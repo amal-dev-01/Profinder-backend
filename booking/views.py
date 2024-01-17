@@ -146,7 +146,6 @@ class UserAddConfirm(APIView):
 
         try:
             print('kkk')
-
             booking = Booking.objects.get(pk=booking_id, user=request.user)
             print(booking)
         except Booking.DoesNotExist:
