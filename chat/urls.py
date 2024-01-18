@@ -10,6 +10,7 @@ urlpatterns = [
     path("ws/", include(websocket_urlpatterns)),
     path("chat/", ListUser.as_view(), name="chat"),
     path("messages/", MessageList.as_view()),
+    path('messages/<int:message_id>/', MessageList.as_view(), name='message-detail'),
     path(
         "chat_history/<str:room_name>/", ChatHistoryView.as_view(), name="chat_history"
     ),

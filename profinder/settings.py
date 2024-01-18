@@ -106,6 +106,8 @@ CHANNEL_LAYERS = {
     }
 
 
+STRIPE_ID=config("STRIPE_ID")
+STRIPE_SECRET=config("STRIPE_SECRET")
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -247,6 +249,7 @@ TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER")
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+FRONT_END_URL ='http://localhost:3000/'
 
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/'
@@ -259,4 +262,4 @@ CELERY_RESULT_BACKEND = "django-db"
 
 
 
-# CELERY_BEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'

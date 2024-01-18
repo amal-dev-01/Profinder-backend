@@ -18,6 +18,9 @@ class User(AbstractUser):
     is_user = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_professional = models.BooleanField(default=False)
+    is_blocked = models.BooleanField(default=False)
+
+
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]

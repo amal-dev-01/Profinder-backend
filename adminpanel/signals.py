@@ -28,4 +28,3 @@ def create_payment(sender, instance, created, **kwargs):
                     amount=amount,
                     total_amount = amount*Decimal('0.10')
                 )
-

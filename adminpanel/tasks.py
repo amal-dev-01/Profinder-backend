@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from account.models import User
 from profinder import settings
 from adminpanel.models import Payment
-from datetime import datetime
+from datetime import datetime,date
 
 
  	
@@ -19,3 +19,28 @@ def send_mail_func():
         to_email = user.professional.email
         send_mail(subject, message, None, [to_email])
     return "Task Successfull"
+
+
+@shared_task()
+def over_due_block():
+    overdue_professionals = User.objects.filter(
+        is_professional =True,
+        payment__status=Payment.PENDING,
+        # payment__month__lt=(date.today().month-1),
+        # payment__year=date.today().year
+    )
+
+    for professional in User.objects.filter(is_professional =True):
+        if professional in overdue_professionals:
+            professional.is_blocked = True
+            message ="blocked"
+            subject="bloceddddddddd"
+            to_email=professional.email
+            send_mail(subject, message, None, [to_email])
+        else:
+            professional.is_blocked = False
+
+        professional.save()
+    return "message Professionals blocked or unblocked based on payment status."
+
+
