@@ -16,9 +16,11 @@ import stripe
 from django.shortcuts import get_object_or_404
 from profinder.settings import STRIPE_SECRET
 from profinder.settings import FRONT_END_URL
+import logging
 
 # Create your views here.
 
+logger = logging.getLogger('django')
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.filter(is_user=True)
@@ -155,16 +157,28 @@ from django.db.models.functions import TruncMonth
 from booking.models import Booking
 from rest_framework.views import APIView
 
-class Total(APIView):
 
-    def get(self,request, *args, **kwargs):
-        result = (
-            Booking.objects.filter(status=Booking.COMPLETED, is_paid=True)
-            .annotate(month=TruncMonth('booking_date'))
-            .values('professional', 'month')  
-            .annotate(total_amount=Sum('price'))
-            .order_by('professional', 'month')  
-        )
+class Total(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            result = (
+                Booking.objects.filter(status=Booking.COMPLETED, is_paid=True)
+                .annotate(month=TruncMonth('booking_date'))
+                .values('professional', 'month')
+                .annotate(total_amount=Sum('price'))
+                .order_by('professional', 'month')
+            )
+            logger.info(level=logging.INFO ,msg='Successfully retrieved total data')
+            logger.debug('This is a debug message')
+            logger.info('This is an informational message')
+            logger.warning('This is a warning message')
+            logger.critical('This is a critical message')
+
+            return Response({'result': result}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error('An error occurred while retrieving total data: %s', str(e))
+            return Response({'error': 'An error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 

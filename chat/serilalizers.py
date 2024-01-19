@@ -16,3 +16,7 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = ("id", "username", "message", "timestamp", "room", "file")
         read_only_fields = ("id", "timestamp")
+
+    # def create(self, validated_data):
+    #     msg =Message.objects.create(**validated_data)
+    #     return msg

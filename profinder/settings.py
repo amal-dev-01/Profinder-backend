@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_celery_results',
     'django_celery_beat',
+    
 
 
 ]
@@ -94,30 +95,30 @@ TEMPLATES = [
 ]
 
 # WSGI_APPLICATION = "profinder.wsgi.application"
-# ASGI_APPLICATION = "profinder.routing.application"
 
 ASGI_APPLICATION = "profinder.asgi.application"
 
 
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': "channels.layers.InMemoryChannelLayer"
+#         }
+#     }
+
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': "channels.layers.InMemoryChannelLayer"
-        }
-    }
-
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 STRIPE_ID=config("STRIPE_ID")
 STRIPE_SECRET=config("STRIPE_SECRET")
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 # DATABASES = {
 #    'default': {
@@ -204,7 +205,7 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config("email")
-EMAIL_HOST_PASSWORD = "oute lakc vhdq lzhy"
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 
 MEDIA_URL = "/media/"
@@ -257,9 +258,31 @@ CELERY_ACCEPT_CONTENT=['application/json']
 CELERY_RESULT_SERIALIZER='json'
 CELERY_TASK_SERIALIZER ='json'
 CELERY_TIMEZONE = 'Asia/kolkata'
-
 CELERY_RESULT_BACKEND = "django-db"
 
 
 
 CELERY_BEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "CRITICAL",
+            "class": "logging.FileHandler",
+            "filename": "./profinder/debug3.log",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers":{"file": {
+            "level": "CRITICAL",
+            "class": "logging.FileHandler",
+            "filename": "./profinder/debug4.log",
+        },},
+            "level": "CRITICAL",
+            "propagate": True,
+        },
+    },
+}
