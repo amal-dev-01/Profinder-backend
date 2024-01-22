@@ -2,6 +2,7 @@ import json
 import urllib
 
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.core.mail import send_mail
 from django.db.models import Q
@@ -18,6 +19,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from account.models import Follower, Location, ProfessionalProfile, User, UserProfile
+from account.serializers import LocationSerializer
 
 from .serializers import (
     ChangePasswordSerializer,
@@ -163,29 +165,11 @@ class MyObtainTokenPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-# class UserProfileUpdateView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, *args, **kwargs):
-#         user_profile = self.request.user.userprofile
-#         serializer = UserProfileSerializer(user_profile)
-#         return Response(serializer.data)
-
-# def put(self, request, *args, **kwargs):
-#     user_profile = self.request.user.userprofile
-#     serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UserDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         user = self.request.user
-        # user = User.objects.get(email = req)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
@@ -305,14 +289,12 @@ class CurrentLocation(APIView):
             else:
                 ip_type = "private"
 
-        # print(client_ip, ip_type)
         ip_address = "103.70.197.218"
         url = "https://api.ipfind.com/?ip=" + ip_address
         response = urllib.request.urlopen(url)
         data1 = json.loads(response.read())
         data1["client_ip"] = client_ip
         data1["ip_type"] = ip_type
-        # print(data1)
         coordinates = Point(data1["longitude"], data1["latitude"], srid=4326)
         if (
             Q(data1["country"])
@@ -398,6 +380,39 @@ class UserListToFollowView(APIView):
         users_to_follow = users_to_follow.exclude(followers__id=request.user.id)
         serializer = UserListSerializer(users_to_follow, many=True)
         return Response(serializer.data)
+
+
+class SearchProfessionalsView(APIView):
+    def get(self, request, *args, **kwargs):
+        job_title = request.query_params.get("job_title", "")
+        locations = request.query_params.get("location", "")
+        user_location = request.user.location.first()
+        if user_location is not None:
+            queryset = (
+                Location.objects.filter(
+                    user__professionalprofile__job__icontains=job_title,
+                    city__icontains=locations,
+                )
+                .annotate(
+                    distance=Distance(
+                        "coordinates",
+                        Point(
+                            user_location.coordinates.x,
+                            user_location.coordinates.y,
+                            srid=4326,
+                        ),
+                    )
+                )
+                .order_by("distance")
+            )
+
+            serializer = LocationSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"message": "User has no associated locations"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 # from django.shortcuts import get_object_or_404

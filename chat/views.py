@@ -36,19 +36,20 @@ class MessageList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
     def delete(self, request, message_id, format=None):
         try:
             message = Message.objects.get(pk=message_id)
         except Message.DoesNotExist:
-            return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Message not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         message.delete()
-        return Response({'message': 'Message deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
-
-    
-
+        return Response(
+            {"message": "Message deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class ChatHistoryView(APIView):

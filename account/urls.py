@@ -14,6 +14,7 @@ from account.views import (
     RegisterView,
     ResendOtp,
     ResetPasswordView,
+    SearchProfessionalsView,
     UserDetailAPIView,
     UserListToFollowView,
     VerifyOtp,
@@ -41,6 +42,7 @@ urlpatterns = [
     path("<int:user_id>/unfollow/", FollowUserView.as_view(), name="unfollow"),
     path("userlist/", UserListToFollowView.as_view(), name="follow-toggle"),
     path("followlist/", FollowersView.as_view(), name="user-following"),
+    path("search/", SearchProfessionalsView.as_view(), name="search_professionals"),
 ]
 
 

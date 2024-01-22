@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
@@ -36,12 +36,12 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',include('account.urls')),
-    path('post/',include('posts.urls')),
-    path('chat/',include('chat.urls')),
-    path('adminpanel/',include('adminpanel.urls')),
-    path('book/',include('booking.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("account.urls")),
+    path("post/", include("posts.urls")),
+    path("chat/", include("chat.urls")),
+    path("adminpanel/", include("adminpanel.urls")),
+    path("book/", include("booking.urls")),
     path(
         "swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"
     ),
@@ -51,7 +51,6 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

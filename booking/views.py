@@ -1,6 +1,6 @@
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions, status
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -17,11 +17,22 @@ from booking.serializers import (
 class BookAppointmentView(APIView):
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(
+        tags=["list bookings"],
+        operation_description="Get the requested user bookings",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+    )
     def get(self, request):
         bookings = Booking.objects.filter(user=request.user)
         serializer = BookingSerializer(bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(
+        tags=["Book professional"],
+        operation_description="User book professional appointment",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+        request_body=BookingSerializer,
+    )
     def post(self, request, professional_id):
         user = self.request.user
         professional = get_object_or_404(User, pk=professional_id)
@@ -46,16 +57,25 @@ class BookAppointmentView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 class ProfessionalBookingsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        tags=["list bookings for professionals"],
+        operation_description="Get the requested professional bookings",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+    )
     def get(self, request):
         professional_bookings = Booking.objects.filter(professional=request.user)
         serializer = BookingSerializer(professional_bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(
+        tags=["Professional booking confirmation "],
+        operation_description="professional appointment confirmation",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+        request_body=BookingSerializer,
+    )
     def post(self, request, booking_id, action):
         try:
             booking = Booking.objects.get(pk=booking_id, professional=request.user)
@@ -77,12 +97,15 @@ class ProfessionalBookingsAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-
-
 class CompleteWorkView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        tags=["Professional complete booking"],
+        operation_description="Professional complete appointment",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+        request_body=BookingSerializer,
+    )
     def patch(self, request, booking_id):
         try:
             print(request.user, booking_id)
@@ -120,11 +143,14 @@ class CompleteWorkView(APIView):
             )
 
 
-
-
 class UserAddConfirm(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        tags=["User confirmation"],
+        operation_description="User Bookig complete confirmation",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+    )
     def get(self, request, booking_id):
         try:
             booking = Booking.objects.get(pk=booking_id, user=request.user)
@@ -142,12 +168,15 @@ class UserAddConfirm(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+    @swagger_auto_schema(
+        tags=["User confirmation"],
+        operation_description="User Bookig complete confirmation",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+        request_body=BookingSerializer,
+    )
     def put(self, request, booking_id, action):
-
         try:
-            print('kkk')
             booking = Booking.objects.get(pk=booking_id, user=request.user)
-            print(booking)
         except Booking.DoesNotExist:
             return Response(
                 {"detail": "Booking not found"}, status=status.HTTP_404_NOT_FOUND
@@ -190,6 +219,3 @@ class UserAddConfirm(APIView):
         booking.save()
         serializer = BookingSerializer(booking)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-

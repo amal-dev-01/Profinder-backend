@@ -1,26 +1,27 @@
+import logging
+from datetime import datetime
+
+import stripe
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
-from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.http import HttpResponse
+from rest_framework.views import APIView
 
 from account.models import User
 from account.serializers import UserSerializer
+from adminpanel.models import Payment
+from adminpanel.serializers import PaymentSerilaizer
 from booking.models import Booking
 from booking.serializers import BookingSerializer
-from adminpanel.models import Payment
-from datetime import datetime,date,time
-from django.db.models import Q
-from adminpanel.serializers import PaymentSerilaizer
-from rest_framework.permissions import IsAuthenticated
-import stripe
-from django.shortcuts import get_object_or_404
-from profinder.settings import STRIPE_SECRET
-from profinder.settings import FRONT_END_URL
-import logging
+from profinder.settings import FRONT_END_URL, STRIPE_SECRET
 
 # Create your views here.
 
-logger = logging.getLogger('django')
+logger = logging.getLogger("django")
+
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.filter(is_user=True)
@@ -46,140 +47,168 @@ class UsersDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
 class BookingView(generics.ListAPIView):
     queryset = Booking.objects.all()
-    serializer_class =BookingSerializer
+    serializer_class = BookingSerializer
 
 
 class BookingFilterView(APIView):
-    def get(self,request,action):
+    @swagger_auto_schema(
+        tags=["Booking search"],
+        operation_description="Booking details",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+    )
+    def get(self, request, action):
         bookings = Booking.objects.filter(status=action)
         serializer = BookingSerializer(bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
 class BookingDetails(APIView):
-    def get(self,request,pk):
+    @swagger_auto_schema(
+        tags=["Booking details"],
+        operation_description="Booking details",
+        responses={200: BookingSerializer, 400: "bad request", 500: "errors"},
+    )
+    def get(self, request, pk):
         try:
             booking = Booking.objects.filter(id=pk).first()
         except Booking.DoesNotExist:
-            return Response({"detail": "Booking not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Booking not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         serializer = BookingSerializer(booking)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 stripe.api_key = STRIPE_SECRET
+
 
 class AdminPayment(APIView):
     permission_classes = [IsAuthenticated]
-    
-    def get(self,request):
+
+    @swagger_auto_schema(
+        tags=["Payment price"],
+        operation_description="Get the payment",
+        responses={200: PaymentSerilaizer, 400: "bad request", 500: "errors"},
+    )
+    def get(self, request):
         try:
             payment = Payment.objects.get(
                 Q(professional=request.user),
-                Q(month=datetime.now().month, year=datetime.now().year)
+                Q(month=datetime.now().month, year=datetime.now().year),
             )
 
         except Payment.DoesNotExist:
-            return Response({"detail": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer =PaymentSerilaizer(payment)
+            return Response(
+                {"detail": "Payment not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = PaymentSerilaizer(payment)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
-    def post(self,request):
-        serializer= PaymentSerilaizer()
+    @swagger_auto_schema(
+        tags=["Professional payment"],
+        operation_description="professional payment to admin",
+        responses={200: PaymentSerilaizer, 400: "bad request", 500: "errors"},
+        request_body=PaymentSerilaizer,
+    )
+    def post(self, request):
+        serializer = PaymentSerilaizer()
         try:
             payment = Payment.objects.get(
                 Q(professional=request.user),
-                Q(month=datetime.now().month, year=datetime.now().year)
+                Q(month=datetime.now().month, year=datetime.now().year),
             )
             print(payment)
 
         except Payment.DoesNotExist:
-            return Response({"detail": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)
-        product = stripe.Product.create(
-            name='Subscription',
-            type='service'
-        )
+            return Response(
+                {"detail": "Payment not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        product = stripe.Product.create(name="Subscription", type="service")
 
         price = stripe.Price.create(
             unit_amount=int(payment.total_amount * 100),
             product=product.id,
-            currency='usd',
+            currency="usd",
         )
 
         customer = stripe.Customer.create(
-            email=request.user.email,
-            name=request.user.username  
+            email=request.user.email, name=request.user.username
         )
 
         try:
             checkout_session = stripe.checkout.Session.create(
-                payment_method_types=['card'],
+                payment_method_types=["card"],
                 line_items=[
                     {
-                        'price': price.id,
-                        'quantity': 1,
+                        "price": price.id,
+                        "quantity": 1,
                     },
                 ],
-                mode='payment',
+                mode="payment",
                 customer=customer.id,
-                success_url = f"{FRONT_END_URL}success/?success=true&session_id={{CHECKOUT_SESSION_ID}}",
-                cancel_url=FRONT_END_URL + '?canceled=true',
-
-                )
+                success_url=f"{FRONT_END_URL}success/?success=true&session_id={{CHECKOUT_SESSION_ID}}",
+                cancel_url=FRONT_END_URL + "?canceled=true",
+            )
             payment.stripe_id = checkout_session.id
             payment.save()
-            return Response({'url': checkout_session.url}, status=status.HTTP_200_OK)
+            return Response({"url": checkout_session.url}, status=status.HTTP_200_OK)
 
         except stripe.error.StripeError as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class PaymentSuccessView(APIView):
-    permission_classes =[IsAuthenticated]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=["Professional payment"],
+        operation_description="professional payment to admin success",
+        responses={200: PaymentSerilaizer, 400: "bad request", 500: "errors"},
+        request_body=PaymentSerilaizer,
+    )
     def post(self, request):
-        session_id = request.data.get('session_id')
+        session_id = request.data.get("session_id")
         payment = get_object_or_404(Payment, stripe_id=session_id)
-        payment.status ='completed'
-        payment.save()        
+        payment.status = "completed"
+        payment.save()
         user = payment.professional
         user.is_blocked = False
         user.save()
 
-
-        return Response({"msg": "Completed Success fully"}, status=status.HTTP_200_OK)
-
+        return Response({"msg": "Completed Successfully"}, status=status.HTTP_200_OK)
 
 
-from django.db.models import Sum
-from django.db.models.functions import TruncMonth
-from booking.models import Booking
-from rest_framework.views import APIView
+# from django.db.models import Sum
+# from django.db.models.functions import TruncMonth
+# from rest_framework.views import APIView
+# from booking.models import Booking
 
 
-class Total(APIView):
-    def get(self, request, *args, **kwargs):
-        try:
-            result = (
-                Booking.objects.filter(status=Booking.COMPLETED, is_paid=True)
-                .annotate(month=TruncMonth('booking_date'))
-                .values('professional', 'month')
-                .annotate(total_amount=Sum('price'))
-                .order_by('professional', 'month')
-            )
-            logger.info(level=logging.INFO ,msg='Successfully retrieved total data')
-            logger.debug('This is a debug message')
-            logger.info('This is an informational message')
-            logger.warning('This is a warning message')
-            logger.critical('This is a critical message')
+# class Total(APIView):
+#     def get(self, request, *args, **kwargs):
+#         try:
+#             result = (
+#                 Booking.objects.filter(status=Booking.COMPLETED, is_paid=True)
+#                 .annotate(month=TruncMonth("booking_date"))
+#                 .values("professional", "month")
+#                 .annotate(total_amount=Sum("price"))
+#                 .order_by("professional", "month")
+#             )
+#             logger.info(level=logging.INFO, msg="Successfully retrieved total data")
+#             logger.debug("This is a debug message")
+#             logger.info("This is an informational message")
+#             logger.warning("This is a warning message")
+#             logger.critical("This is a critical message")
 
-            return Response({'result': result}, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.error('An error occurred while retrieving total data: %s', str(e))
-            return Response({'error': 'An error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
+#             return Response({"result": result}, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             logger.error("An error occurred while retrieving total data: %s", str(e))
+#             return Response(
+#                 {"error": "An error occurred"},
+#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             )
 
 
 # from adminpanel.tasks import send_mail_func

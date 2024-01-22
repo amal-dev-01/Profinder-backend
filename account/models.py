@@ -20,8 +20,6 @@ class User(AbstractUser):
     is_professional = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
 
-
-
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
@@ -72,6 +70,7 @@ class Location(models.Model):
     @property
     def latitude(self):
         return self.coordinates.y
+
     def __str__(self):
         return self.state
 

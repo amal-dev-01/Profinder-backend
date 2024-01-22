@@ -56,12 +56,9 @@ INSTALLED_APPS = [
     "booking",
     "django.contrib.gis",
     "rest_framework_gis",
-    'drf_yasg',
-    'django_celery_results',
-    'django_celery_beat',
-    
-
-
+    "drf_yasg",
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -73,7 +70,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
 ]
 
 ROOT_URLCONF = "profinder.urls"
@@ -106,16 +102,16 @@ ASGI_APPLICATION = "profinder.asgi.application"
 #     }
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
 
-STRIPE_ID=config("STRIPE_ID")
-STRIPE_SECRET=config("STRIPE_SECRET")
+STRIPE_ID = config("STRIPE_ID")
+STRIPE_SECRET = config("STRIPE_SECRET")
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -152,8 +148,8 @@ SWAGGER_SETTINGS = {
             "in": "header",
             "name": "Authorization",
             "type": "apiKey",
-   },
-},
+        },
+    },
 }
 
 
@@ -205,7 +201,7 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config("email")
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 
 MEDIA_URL = "/media/"
@@ -250,19 +246,18 @@ TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER")
 
 
 CORS_ALLOW_ALL_ORIGINS = True
-FRONT_END_URL ='http://localhost:3000/'
+FRONT_END_URL = "http://localhost:3000/"
 
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379/'
-CELERY_ACCEPT_CONTENT=['application/json']
-CELERY_RESULT_SERIALIZER='json'
-CELERY_TASK_SERIALIZER ='json'
-CELERY_TIMEZONE = 'Asia/kolkata'
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "Asia/kolkata"
 CELERY_RESULT_BACKEND = "django-db"
 
 
-
-CELERY_BEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 LOGGING = {
     "version": 1,
@@ -276,11 +271,13 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers":{"file": {
-            "level": "CRITICAL",
-            "class": "logging.FileHandler",
-            "filename": "./profinder/debug4.log",
-        },},
+            "handlers": {
+                "file": {
+                    "level": "CRITICAL",
+                    "class": "logging.FileHandler",
+                    "filename": "./profinder/debug4.log",
+                },
+            },
             "level": "CRITICAL",
             "propagate": True,
         },

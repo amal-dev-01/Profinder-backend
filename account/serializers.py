@@ -5,14 +5,14 @@ from rest_framework import serializers
 # from rest_framework_gis.serializers import GeoFeatureModelListSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from account.models import Follower, ProfessionalProfile, User, UserProfile
+from account.models import Follower, Location, ProfessionalProfile, User, UserProfile
 
 # from django.contrib.auth.password_validation import validate_password
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     # password = serializers.CharField(
-    # write_only=True, required=True, 
+    # write_only=True, required=True,
     # validators=[validate_password]
     # )
     password = serializers.CharField(write_only=True, required=True)
@@ -105,7 +105,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "userprofile",
             "professionalprofile",
-            "is_active"
+            "is_active",
         )
 
     def update(self, instance, validated_data):
@@ -190,27 +190,6 @@ class UserListSerializer(serializers.ModelSerializer):
         fields = ("id", "username", "email")
 
 
-# class UserFollowingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ['id', 'username', 'email', 'phone']
-# class UserFollowersSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ['id', 'username', 'email', 'phone']
-
-
-# class UserFollowingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('id', 'username', 'email')
-
-# class UserFollowersSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('id', 'username', 'email')
-
-
 class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -230,3 +209,9 @@ class FollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follower
         fields = ["id", "created", "user", "following_user"]
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = "__all__"
