@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from account.models import User
-from chat.serilalizers import MessageSerializer, UserGetSerializer
+from chat.serilalizers import MessageSerializer, UserGetSerializer,RoomSerializer
 
-from .models import Message
+from .models import Message,Room
 
 # Create your views here.
 
@@ -80,3 +80,15 @@ class DeleteMessageView(APIView):
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class ChatNotification(APIView):
+    def get(self, request):
+        rooms = Room.objects.filter(name__contains=request.user.username)
+        serializer = RoomSerializer(rooms, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# class Notification(APIView):
+#     def get(request):
+#     return Response(request, 'index.html')

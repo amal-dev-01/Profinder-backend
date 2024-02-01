@@ -1,11 +1,13 @@
-from django.urls import path
+from django.urls import path,include
 
 from .views import (
     BookAppointmentView,
     CompleteWorkView,
     ProfessionalBookingsAPIView,
     UserAddConfirm,
+    ProfessionalAcceptBookingsAPIView,Notification
 )
+from . routing import websocket_urlpatterns
 
 urlpatterns = [
     path("bookings/", BookAppointmentView.as_view(), name="bookings"),
@@ -16,6 +18,11 @@ urlpatterns = [
         "professional_bookings/",
         ProfessionalBookingsAPIView.as_view(),
         name="professional-bookings-list",
+    ),
+    path(
+        "professional_bookings_accepted/",
+        ProfessionalAcceptBookingsAPIView.as_view(),
+        name="professional-bookings-accept",
     ),
     path(
         "professional_bookings/<int:booking_id>/<str:action>/",
@@ -37,4 +44,13 @@ urlpatterns = [
         UserAddConfirm.as_view(),
         name="booking-details",
     ),
+    path("ws/", include(websocket_urlpatterns)),
+     path(
+        "notification/",
+        Notification.as_view(),
+        name="notification",
+    ),
+    # path('send_notification/', views.send_notification, name='send_notification'),
+
+  
 ]

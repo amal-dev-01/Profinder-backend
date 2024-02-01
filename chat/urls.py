@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import include, path
 
 from chat.routing import websocket_urlpatterns
-from chat.views import ChatHistoryView, DeleteMessageView, ListUser, MessageList
+from chat.views import ChatHistoryView, DeleteMessageView, ListUser, MessageList,ChatNotification
 
 urlpatterns = [
     path("ws/", include(websocket_urlpatterns)),
@@ -18,6 +18,8 @@ urlpatterns = [
         DeleteMessageView.as_view(),
         name="delete_message",
     ),
+    path("proroom/", ChatNotification.as_view()),
+
 ]
 
 

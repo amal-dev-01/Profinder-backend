@@ -140,7 +140,7 @@ class CommentCreateView(APIView):
 
     def get(self, request, pk, format=None):
         post = get_object_or_404(Post, pk=pk)
-        comments = Comment.objects.filter(post=post)
+        comments = Comment.objects.filter(post=post).order_by('-id')
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 

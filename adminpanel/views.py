@@ -180,6 +180,16 @@ class PaymentSuccessView(APIView):
         return Response({"msg": "Completed Successfully"}, status=status.HTTP_200_OK)
 
 
+
+class ProfessionalPayment(APIView):
+
+    def get(self,request):
+        payment = Payment.objects.all()
+        serializer = PaymentSerilaizer(payment,many=True)
+        return Response(serializer.data)
+
+
+
 # from django.db.models import Sum
 # from django.db.models.functions import TruncMonth
 # from rest_framework.views import APIView

@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     "django_celery_beat",
 ]
 
+ASGI_APPLICATION = "profinder.asgi.application"
+
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -70,6 +73,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # 'channels.middleware.WebSocketMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'channels.middleware.WebSocketMiddleware',
+
 ]
 
 ROOT_URLCONF = "profinder.urls"
@@ -92,23 +99,23 @@ TEMPLATES = [
 
 # WSGI_APPLICATION = "profinder.wsgi.application"
 
-ASGI_APPLICATION = "profinder.asgi.application"
+# ASGI_APPLICATION = "profinder.asgi.application"
 
-
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': "channels.layers.InMemoryChannelLayer"
-#         }
-#     }
 
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
+    'default': {
+        'BACKEND': "channels.layers.InMemoryChannelLayer"
+        }
+    }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
 
 STRIPE_ID = config("STRIPE_ID")
 STRIPE_SECRET = config("STRIPE_SECRET")
@@ -214,11 +221,17 @@ REST_FRAMEWORK = {
     ],
 }
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
     "ROTATE_REFRESH_TOKENS": True,
+    'SIGNING_KEY': settings.SECRET_KEY,
+
 }
 
 

@@ -20,7 +20,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from account.models import Follower, Location, ProfessionalProfile, User, UserProfile
 from account.serializers import LocationSerializer
-
+from posts.models import Post
 from .serializers import (
     ChangePasswordSerializer,
     FollowerSerializer,
@@ -33,6 +33,7 @@ from .serializers import (
     UserListSerializer,
     UserSerializer,
 )
+from posts.serializer import PostSerializer
 from .utils import generate_otp
 
 # Create your views here.
@@ -273,6 +274,19 @@ class ResetPasswordView(APIView):
             return Response(
                 {"detail": "Invalid reset link"}, status=status.HTTP_400_BAD_REQUEST
             )
+
+class ViewUserProfile(APIView):
+    def get(self,request,pk):
+        user = User.objects.get(pk=pk)
+        serializer =UserSerializer(user)
+        return Response(serializer.data)
+
+
+class UserPostView(APIView):
+    def get(self,request,pk):
+        posts = Post.objects.filter(user=pk)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
 
 
 class CurrentLocation(APIView):

@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-
+from datetime import datetime
 from account.models import User
 
 
@@ -55,3 +55,14 @@ class Complaint(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.created_at}"
+
+
+
+
+class BookingNotification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.CharField(max_length=100)
+    # date = models.DateTimeField(datetime.now())
+
+    def __str__(self):
+        return self.message

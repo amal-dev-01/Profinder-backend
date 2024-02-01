@@ -3,6 +3,7 @@ from rest_framework import serializers
 from account.models import User
 
 from .models import Comment, Like, Post
+from account.serializers import UserProfileSerializer,ProfessionalProfileSerilaizer
 
 
 class CommentUserSerializer(serializers.ModelSerializer):
@@ -38,7 +39,8 @@ class LikeSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     likes = LikeSerializer(many=True, read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-
+    userprofile = UserProfileSerializer(source='user.userprofile',required=False)
+    professionalprofile = ProfessionalProfileSerilaizer(source='user.professionalprofile',required=False)
     total_likes = serializers.SerializerMethodField()
 
     class Meta:
@@ -53,6 +55,8 @@ class PostSerializer(serializers.ModelSerializer):
             "likes",
             "total_likes",
             "comments",
+            "userprofile",
+            "professionalprofile"
         )
         read_only_fields = ("user",)
 

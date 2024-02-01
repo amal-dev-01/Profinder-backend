@@ -90,8 +90,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ("image", "bio", "address")
 
-
-class UserSerializer(serializers.ModelSerializer):
+class UserPostSerializer(serializers.ModelSerializer):
     userprofile = UserProfileSerializer(required=False)
     professionalprofile = ProfessionalProfileSerilaizer(required=False)
 
@@ -106,6 +105,29 @@ class UserSerializer(serializers.ModelSerializer):
             "userprofile",
             "professionalprofile",
             "is_active",
+         
+        )
+
+
+class UserSerializer(serializers.ModelSerializer):
+    userprofile = UserProfileSerializer(required=False)
+    professionalprofile = ProfessionalProfileSerilaizer(required=False)
+    
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "username",
+            "phone",
+            "first_name",
+            "last_name",
+            "userprofile",
+            "professionalprofile",
+            "is_active",
+            "is_professional",
+            "is_user",
         )
 
     def update(self, instance, validated_data):
