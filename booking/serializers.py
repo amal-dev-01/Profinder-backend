@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from booking.models import Booking, Complaint,BookingNotification
+from booking.models import Booking, BookingNotification, Complaint
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    user_name = serializers.ReadOnlyField(source='user.username')
-    professional_name = serializers.ReadOnlyField(source='professional.username')
+    user_name = serializers.ReadOnlyField(source="user.username")
+    professional_name = serializers.ReadOnlyField(source="professional.username")
 
     class Meta:
         model = Booking
@@ -20,14 +20,13 @@ class BookingSerializer(serializers.ModelSerializer):
             "price",
             "is_paid",
             "is_completed",
-            'user_name',    
-            'professional_name'
+            "user_name",
+            "professional_name",
         ]
+
     # def create(self, validated_data):
     #     booking = Booking.objects.create(**validated_data)
     #     return booking
-
-
 
 
 class PaymentDetailsSerializer(serializers.Serializer):
@@ -43,4 +42,4 @@ class ComplaintSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookingNotification
-        fields = '__all__'
+        fields = "__all__"

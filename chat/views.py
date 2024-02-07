@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from account.models import User
-from chat.serilalizers import MessageSerializer, UserGetSerializer,RoomSerializer
+from chat.serilalizers import MessageSerializer, RoomSerializer, UserGetSerializer
 
-from .models import Message,Room
+from .models import Message, Room
 
 # Create your views here.
 

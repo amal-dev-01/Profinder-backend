@@ -1,16 +1,15 @@
 from django.urls import path
 
+from adminpanel.views import BookingDetails  # Total,
 from adminpanel.views import (
     AdminPayment,
-    BookingDetails,  # Total,
     BookingFilterView,
     BookingView,
     PaymentSuccessView,
+    ProfessionalPayment,
     ProfessionlList,
     UserList,
     UsersDetailsView,
-    ProfessionalPayment
-
 )
 
 urlpatterns = [
@@ -29,9 +28,7 @@ urlpatterns = [
         name="booking-details-view",
     ),
     path("payment_details/", ProfessionalPayment.as_view(), name="payment-details"),
-
     path("payment/", AdminPayment.as_view(), name="payment-details-checkout"),
-
     path("payment_success/", PaymentSuccessView.as_view(), name="payment-success"),
     # path("total/", Total.as_view()),
     # path('sendmail/', send_mail_to_users,name="send_mail_to_users"),

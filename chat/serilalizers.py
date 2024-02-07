@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from chat.models import Message,Room
+
+from chat.models import Message, Room
 
 
 class UserGetSerializer(serializers.ModelSerializer):
@@ -16,10 +17,8 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = ("id", "username", "message", "timestamp", "room", "file")
         read_only_fields = ("id", "timestamp")
 
-    # def create(self, validated_data):
-    #     msg =Message.objects.create(**validated_data)
-    #     return msg
+
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = '__all__'
+        fields = "__all__"

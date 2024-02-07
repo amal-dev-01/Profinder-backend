@@ -17,9 +17,9 @@ from account.views import (
     SearchProfessionalsView,
     UserDetailAPIView,
     UserListToFollowView,
+    UserPostView,
     VerifyOtp,
     ViewUserProfile,
-    UserPostView
 )
 
 urlpatterns = [
@@ -46,7 +46,6 @@ urlpatterns = [
     path("followlist/", FollowersView.as_view(), name="user-following"),
     path("search/", SearchProfessionalsView.as_view(), name="search_professionals"),
     path("user_post/<int:pk>/", UserPostView.as_view(), name="user_post"),
-
     path(
         "user_view/<int:pk>/",
         ViewUserProfile.as_view(),

@@ -21,6 +21,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from account.models import Follower, Location, ProfessionalProfile, User, UserProfile
 from account.serializers import LocationSerializer
 from posts.models import Post
+from posts.serializer import PostSerializer
+
 from .serializers import (
     ChangePasswordSerializer,
     FollowerSerializer,
@@ -31,9 +33,9 @@ from .serializers import (
     RegisterSerializer,
     ResendOtpSerializer,
     UserListSerializer,
+    UserPostSerializer,
     UserSerializer,
 )
-from posts.serializer import PostSerializer
 from .utils import generate_otp
 
 # Create your views here.
@@ -170,9 +172,15 @@ class UserDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        user = self.request.user
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+        try:
+            user = self.request.user
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+        except Exception as e:
+                return Response(
+                    {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
 
     def put(self, request, *args, **kwargs):
         try:
@@ -275,18 +283,35 @@ class ResetPasswordView(APIView):
                 {"detail": "Invalid reset link"}, status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class ViewUserProfile(APIView):
-    def get(self,request,pk):
-        user = User.objects.get(pk=pk)
-        serializer =UserSerializer(user)
-        return Response(serializer.data)
+    def get(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+        except User.DoesNotExist:
+            return Response(
+                    {"error": "No uer found"}, status=status.HTTP_404_NOT_FOUND
+                ) 
+
+        except Exception as e:
+                return Response(
+                    {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                ) 
 
 
 class UserPostView(APIView):
-    def get(self,request,pk):
-        posts = Post.objects.filter(user=pk)
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+    def get(self, request, pk):
+        try:
+            posts = Post.objects.filter(user=pk)
+            serializer = PostSerializer(posts, many=True)
+            return Response(serializer.data)
+        except Post.DoesNotExist:
+            return Response(
+                    {"error": "No uer found"}, status=status.HTTP_404_NOT_FOUND
+                ) 
+
 
 
 class CurrentLocation(APIView):
@@ -399,28 +424,28 @@ class UserListToFollowView(APIView):
 class SearchProfessionalsView(APIView):
     def get(self, request, *args, **kwargs):
         job_title = request.query_params.get("job_title", "")
-        locations = request.query_params.get("location", "")
-        user_location = request.user.location.first()
-        if user_location is not None:
+        # locations = request.query_params.get("location", "")
+        # user_location = request.user.location.first()
+        if job_title is not None:
             queryset = (
-                Location.objects.filter(
-                    user__professionalprofile__job__icontains=job_title,
-                    city__icontains=locations,
+                User.objects.filter(
+                    professionalprofile__job__icontains=job_title,
+                    # city__icontains=locations,
                 )
-                .annotate(
-                    distance=Distance(
-                        "coordinates",
-                        Point(
-                            user_location.coordinates.x,
-                            user_location.coordinates.y,
-                            srid=4326,
-                        ),
-                    )
-                )
-                .order_by("distance")
+                # .annotate(
+                #     distance=Distance(
+                #         "coordinates",
+                #         Point(
+                #             user_location.coordinates.x,
+                #             user_location.coordinates.y,
+                #             srid=4326,
+                #         ),
+                #     )
+                # )
+                # .order_by("distance")
             )
 
-            serializer = LocationSerializer(queryset, many=True)
+            serializer = UserPostSerializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(
@@ -486,52 +511,3 @@ class SearchProfessionalsView(APIView):
 #         return Response(serializer.data)
 
 
-# class RegisterView(APIView):
-#     def post(self, request, *args, **kwargs):
-#         serializer = RegisterSerializer(data=request.data)
-#         if serializer.is_valid():
-#             user = serializer.save()
-#             try:
-#                 verification_sid = send_sms(str(user.phone))
-#                 request.session['verification_sid']=verification_sid
-#                 print(verification_sid)
-#                 return Response ({'id':verification_sid},status=status.HTTP_200_OK)
-#             except Exception as e:
-#                 print(e)
-#             return Response({'message': 'Registration successful'}, status=status.HTTP_201_CREATED)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-#
-
-# class RegisterView(APIView):
-#     def post(self, request):
-#         serializer = RegisterSerializer(data=request.data)
-
-#         print('llllllllll')
-#         serializer.is_valid()
-#         print(serializer['email'])
-#         # try:
-#         user = User.objects.create(
-#             email=serializer.validated_data.get('email'),
-#             username=serializer.validated_data.get('username'),
-#             password=serializer.validated_data.get('password'),
-#             phone=serializer.validated_data.get('phone'),
-#             is_professional=serializer.validated_data.get('is_professional', False),
-#         )
-#         print(user)
-#         otp = generate_otp()
-#         print(otp)
-#         user.otp = otp
-#         user.save()
-#         print(otp)
-#             # subject = 'Registration OTP'
-#             # message = f'Your OTP for registration is: {otp}'
-#             # to_email = user.email
-#             # send_mail(subject, message, None, [to_email])
-#         return Response({'msg': 'data inserted'}, status=status.HTTP_201_CREATED)
-#         # except serializers.ValidationError as e:
-#         #     return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-#         # except Exception as e:
-#         #     return Response({'error': 'An unexpected error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

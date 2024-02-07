@@ -90,6 +90,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ("image", "bio", "address")
 
+
 class UserPostSerializer(serializers.ModelSerializer):
     userprofile = UserProfileSerializer(required=False)
     professionalprofile = ProfessionalProfileSerilaizer(required=False)
@@ -97,6 +98,7 @@ class UserPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
+            "id",
             "email",
             "username",
             "phone",
@@ -105,14 +107,12 @@ class UserPostSerializer(serializers.ModelSerializer):
             "userprofile",
             "professionalprofile",
             "is_active",
-         
         )
 
 
 class UserSerializer(serializers.ModelSerializer):
     userprofile = UserProfileSerializer(required=False)
     professionalprofile = ProfessionalProfileSerilaizer(required=False)
-    
 
     class Meta:
         model = User

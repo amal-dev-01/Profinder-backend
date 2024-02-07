@@ -3,7 +3,7 @@ from datetime import datetime
 
 import stripe
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -111,7 +111,7 @@ class AdminPayment(APIView):
         request_body=PaymentSerilaizer,
     )
     def post(self, request):
-        serializer = PaymentSerilaizer()
+        # serializer = PaymentSerilaizer()
         try:
             payment = Payment.objects.get(
                 Q(professional=request.user),
@@ -170,7 +170,7 @@ class PaymentSuccessView(APIView):
     )
     def post(self, request):
         session_id = request.data.get("session_id")
-        payment = get_object_or_404(Payment, stripe_id=session_id)
+        payment = Payment.objects.get(stripe_id=session_id)
         payment.status = "completed"
         payment.save()
         user = payment.professional
@@ -180,13 +180,23 @@ class PaymentSuccessView(APIView):
         return Response({"msg": "Completed Successfully"}, status=status.HTTP_200_OK)
 
 
-
 class ProfessionalPayment(APIView):
+    def get(self, request):
+        try:
+            payment = Payment.objects.all()
+            serializer = PaymentSerilaizer(payment, many=True)
+            return Response(serializer.data)
+        except Payment.DoesNotExist:
+            return Response({"error":"Not payment is found"},status=status.HTTP_404_NOT_FOUND)
 
-    def get(self,request):
-        payment = Payment.objects.all()
-        serializer = PaymentSerilaizer(payment,many=True)
-        return Response(serializer.data)
+
+
+
+
+
+
+
+
 
 
 

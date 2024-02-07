@@ -252,6 +252,17 @@ SIMPLE_JWT = {
 
 # settings.py
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1", 
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
 ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
 AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")
 SERVICE_SID = config("SERVICE_SID")
