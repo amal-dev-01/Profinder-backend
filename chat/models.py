@@ -1,4 +1,5 @@
 from django.db import models
+from account.models import User
 
 
 # Create your models here.
@@ -11,6 +12,8 @@ class Message(models.Model):
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     file = models.FileField(upload_to="uploads/", null=True, blank=True)
+
+
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
     class Meta:
