@@ -13,8 +13,14 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from django.conf import settings
-from decouple import Csv, config
+
 from osgeo import gdal
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY", default="mykey")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -117,8 +123,8 @@ CHANNEL_LAYERS = {
 #     },
 # }
 
-STRIPE_ID = config("STRIPE_ID")
-STRIPE_SECRET = config("STRIPE_SECRET")
+STRIPE_ID = os.environ.get("STRIPE_ID")
+STRIPE_SECRET = os.environ.get("STRIPE_SECRET")
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -207,8 +213,9 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config("email")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = os.environ.get("email")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
 
 
 MEDIA_URL = "/media/"
@@ -263,10 +270,10 @@ CACHES = {
 }
 
 
-ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
-AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")
-SERVICE_SID = config("SERVICE_SID")
-TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER")
+# ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
+# AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")
+# SERVICE_SID = config("SERVICE_SID")
+# TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER")
 
 
 CORS_ALLOW_ALL_ORIGINS = True
