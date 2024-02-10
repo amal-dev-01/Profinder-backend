@@ -9,6 +9,7 @@ class Room(models.Model):
 
 class Message(models.Model):
     username = models.CharField(max_length=255)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     file = models.FileField(upload_to="uploads/", null=True, blank=True)

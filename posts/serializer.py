@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from account.models import User
-from account.serializers import ProfessionalProfileSerilaizer, UserProfileSerializer
+from account.serializers import ProfessionalProfileSerilaizer, UserProfileSerializer,UserSerializer
 
 from .models import Comment, Like, Post
 
@@ -19,11 +19,11 @@ class LikeUserSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = CommentUserSerializer(read_only=True)
-    userprofile = UserProfileSerializer(source="user.userprofile", required=False)
-    professionalprofile = ProfessionalProfileSerilaizer(
-        source="user.professionalprofile", required=False
-    )
+    # user = CommentUserSerializer(read_only=True)
+    # userprofile = UserProfileSerializer(source="user.userprofile", required=False)
+    # professionalprofile = ProfessionalProfileSerilaizer(
+    #     source="user.professionalprofile", required=False
+    # )
 
     class Meta:
         model = Comment
@@ -33,8 +33,8 @@ class CommentSerializer(serializers.ModelSerializer):
             "user",
             "text",
             "created_at",
-            "userprofile",
-            "professionalprofile",
+            # "userprofile",
+            # "professionalprofile",
         ]
         # read_only_fields = ("user",)
 
@@ -45,23 +45,18 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class LikeSerializer(serializers.ModelSerializer):
-    user = LikeUserSerializer(read_only=True)
+    # user = LikeUserSerializer(read_only=True)
 
     class Meta:
         model = Like
         fields = ("user", "post", "created_at")
-        read_only_fields = ("user",)
+        # read_only_fields = ("user",)
 
 
 class PostSerializer(serializers.ModelSerializer):
     likes = LikeSerializer(many=True, read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-    userprofile = UserProfileSerializer(source="user.userprofile", required=False)
-    professionalprofile = ProfessionalProfileSerilaizer(
-        source="user.professionalprofile", required=False
-    )
-    total_likes = serializers.SerializerMethodField()
-
+    user = UserSerializer()
     class Meta:
         model = Post
         fields = (
@@ -72,15 +67,11 @@ class PostSerializer(serializers.ModelSerializer):
             "created_at",
             "description",
             "likes",
-            "total_likes",
             "comments",
-            "userprofile",
-            "professionalprofile",
         )
         read_only_fields = ("user",)
 
     def create(self, validated_data):
-        # validated_data["user"] = self.context["request"].user
         return super(PostSerializer, self).create(validated_data)
 
     def update(self, instance, validated_data):
@@ -92,3 +83,26 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_total_likes(self, post):
         return post.likes.count()
+
+# class PostSerializer(serializers.ModelSerializer):
+#     likes = LikeSerializer(many=True, read_only=True)
+#     comments = CommentSerializer(many=True, read_only=True)
+#     # userprofile = UserProfileSerializer(source="user.userprofile", required=False)
+#     # professionalprofile = ProfessionalProfileSerilaizer(
+#     #     source="user.professionalprofile", required=False
+#     # )
+
+#     class Meta:
+#         model = Post
+#         fields = (
+#             "id",
+#             "title",
+#             # "user",
+#             "post",
+#             "created_at",
+#             "description",
+#             "likes",
+#             "comments",
+#             # "userprofile",
+#             # "professionalprofile",
+#         )

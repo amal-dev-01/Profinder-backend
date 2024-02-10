@@ -22,9 +22,7 @@ class PostView(APIView):
     )
     def get(self, request, format=None):
         try:
-            posts = Post.objects.filter(user=request.user)
-            if not posts:
-                raise Post.DoesNotExist("No posts found for the current user.")
+            posts = Post.objects.filter(user=request.user).select_related('user').prefetch_related('likes', 'comments')
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data)
         except Post.DoesNotExist:

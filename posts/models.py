@@ -13,10 +13,17 @@ class Post(models.Model):
     title = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(max_length=600, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post")
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['created_at']),
+        ]
+
+
 
     def __str__(self):
-        return self.title
+        return self.title 
 
 
 class Like(models.Model):
@@ -26,6 +33,12 @@ class Like(models.Model):
 
     def __str__(self):
         return f"Liked by {self.user.username} on post {self.post.id}"
+    class Meta:
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['post']),
+        ]
+
 
 
 class Comment(models.Model):
@@ -33,6 +46,13 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(default=datetime.now())
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['post']),
+        ]
+
 
     def __str__(self):
         return f"Comment by {self.user.username} on post {self.post.id}"
