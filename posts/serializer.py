@@ -19,7 +19,7 @@ class LikeUserSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    # user = CommentUserSerializer(read_only=True)
+    user = CommentUserSerializer(read_only=True)
     # userprofile = UserProfileSerializer(source="user.userprofile", required=False)
     # professionalprofile = ProfessionalProfileSerilaizer(
     #     source="user.professionalprofile", required=False
@@ -83,26 +83,3 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_total_likes(self, post):
         return post.likes.count()
-
-# class PostSerializer(serializers.ModelSerializer):
-#     likes = LikeSerializer(many=True, read_only=True)
-#     comments = CommentSerializer(many=True, read_only=True)
-#     # userprofile = UserProfileSerializer(source="user.userprofile", required=False)
-#     # professionalprofile = ProfessionalProfileSerilaizer(
-#     #     source="user.professionalprofile", required=False
-#     # )
-
-#     class Meta:
-#         model = Post
-#         fields = (
-#             "id",
-#             "title",
-#             # "user",
-#             "post",
-#             "created_at",
-#             "description",
-#             "likes",
-#             "comments",
-#             # "userprofile",
-#             # "professionalprofile",
-#         )
