@@ -54,7 +54,7 @@ class PostUpdateDelettView(APIView):
 
     def get(self, request, pk, format=None):
         try:
-            post = Post.objects.get(pk=pk)
+            post = Post.objects.prefetch_related('likes', 'comments').get(pk=pk)
             serializer = PostSerializer(post)
             return Response(serializer.data)
         except Post.DoesNotExist:
@@ -107,7 +107,7 @@ class AllPost(APIView):
 
     def get(self, request, format=None):
         try:
-            posts = Post.objects.exclude(user=request.user)
+            posts = Post.objects.exclude(user=request.user).select_related('user').prefetch_related('likes', 'comments')
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data)
 
