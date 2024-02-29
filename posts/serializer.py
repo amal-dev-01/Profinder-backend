@@ -41,7 +41,21 @@ class CommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return super().create(validated_data)
 
-    
+class UserPostSerializer(serializers.ModelSerializer):
+    userprofile = UserProfileSerializer(required=False)
+    professionalprofile = ProfessionalProfileSerilaizer(required=False)
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "userprofile",
+            "professionalprofile",
+
+        )
+
+
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -56,7 +70,7 @@ class LikeSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     likes = LikeSerializer(many=True, read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-    user = UserSerializer()
+    # posts = UserPostSerializer(read_only=True,allow_null=True)
     class Meta:
         model = Post
         fields = (
@@ -68,6 +82,8 @@ class PostSerializer(serializers.ModelSerializer):
             "description",
             "likes",
             "comments",
+            # "posts"
+
         )
         read_only_fields = ("user",)
 

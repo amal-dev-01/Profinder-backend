@@ -4,6 +4,8 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
+
 
 from .models import Comment, Like, Post
 from .serializer import CommentSerializer, PostSerializer
@@ -106,16 +108,13 @@ class AllPost(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        try:
-            posts = Post.objects.exclude(user=request.user).select_related('user').prefetch_related('likes', 'comments')
-            serializer = PostSerializer(posts, many=True)
-            return Response(serializer.data)
-
-        except Post.DoesNotExist:
-            return Response(
-                {"error": "Post not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        paginator = PageNumberPagination()
+        paginator.page_size = 3 
+        posts = Post.objects.exclude(user=request.user).select_related('user').prefetch_related('likes', 'comments')
+        # serializer = PostSerializer(posts, many=True)
+        result_page = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(result_page, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 class PostLikeView(APIView):

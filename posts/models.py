@@ -12,7 +12,7 @@ class Post(models.Model):
     post = models.FileField()
     title = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(max_length=600, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     created_at = models.DateTimeField(auto_now=True)
     class Meta:
         indexes = [
