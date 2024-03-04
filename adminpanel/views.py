@@ -230,29 +230,3 @@ class ProfessionalPayment(APIView):
 #                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
 #             )
 
-
-# from adminpanel.tasks import send_mail_func
-# from django.shortcuts import HttpResponse
-
-# def send_mail_to_users(request):
-#     send_mail_func.delay()
-#     return HttpResponse('sent')
-
-
-# class BlockOverdueProfessionalsAPIView(APIView):
-#     def post(self, request, *args, **kwargs):
-#         overdue_professionals = User.objects.filter(
-#             is_professional =True,
-#             payment__status=Payment.PENDING,
-#             payment__month__lt=(date.today().month - 1),
-#             payment__year=date.today().year
-#         ).distinct()
-
-#         for professional in User.objects.filter(is_professional =True):
-#             if professional in overdue_professionals:
-#                 professional.is_blocked = True
-#             else:
-#                 professional.is_blocked = False
-
-#             professional.save()
-#         return Response({"message": "Professionals blocked or unblocked based on payment status."}, status=status.HTTP_200_OK)
